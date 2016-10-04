@@ -1,5 +1,3 @@
-import groovy.transform.AutoClone
-import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
 /**
@@ -7,19 +5,8 @@ import groovy.transform.TupleConstructor
  */
 public class RulesDsl {
 
-  @AutoClone
-  @TupleConstructor
-  @ToString
-  class RuleRecord {
-    String cellKind
-    Closure neighboursCheck
-    String action
-  }
 
-  def static String live = "live"
-  def static String dead = "dead"
-
-  ArrayList<RuleRecord> rules = new ArrayList<RuleRecord>();
+  ArrayList<Rule> rules = new ArrayList<Rule>();
 
   def getRules = { rules }
 
@@ -31,10 +18,13 @@ public class RulesDsl {
     rulesDsl.getRules()
   }
 
-  RuleRecord tmpRecord = new RuleRecord()
+  Rule tmpRule = new Rule()
+
+  public static final String live = "live"
+  public static final String dead = "dead"
 
   def when(String cellKind) {
-    tmpRecord.cellKind = cellKind
+    tmpRule.cellStateBefore = cellKind.toUpperCase()
     this
   }
 
@@ -44,7 +34,7 @@ public class RulesDsl {
   }
 
   def with(Closure neighboursCheck) {
-    tmpRecord.neighboursCheck = { neighbours ->
+    tmpRule.neighboursCheck = { neighbours ->
       neighboursCheck.delegate = new NeighboursCheck(neighbours)
       neighboursCheck()
     }
@@ -52,8 +42,8 @@ public class RulesDsl {
   }
 
   def then(String action) {
-    tmpRecord.action = action
-    rules.add(tmpRecord.clone())
+    tmpRule.cellStateAfter = action.toUpperCase()
+    rules.add(tmpRule.clone())
   }
 
 }
