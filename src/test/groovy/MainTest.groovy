@@ -3,7 +3,6 @@
  * Created by rolandas on 10/4/16.
  */
 
-
 class MainTest extends spock.lang.Specification {
 
   def "two different instances of cell with same coords are equal"() {
@@ -11,7 +10,7 @@ class MainTest extends spock.lang.Specification {
     def cell2 = new Cell(1,1)
 
     expect:
-      cell1 == cell2
+    cell1 == cell2
   }
 
   def "two cells with different coords are not equal"() {
@@ -20,6 +19,7 @@ class MainTest extends spock.lang.Specification {
 
     expect:
     !cell1.equals(cell2)
+    cell1 != cell2
   }
 
   def "rule description gives correct rule"() {
@@ -28,8 +28,9 @@ class MainTest extends spock.lang.Specification {
     }
 
     expect:
-      rules[0].cellKind == "live"
-      rules[0].action == "live"
+    rules[0].cellKind == "live"
+    rules[0].action == "live"
+    rules[0].neighboursCheck(2) is true
   }
 
 }

@@ -11,4 +11,6 @@ class Game {
     when live with {neighbours < 2}  then dead
     when live with {neighbours > 3}  then dead
   }
+
+
 }

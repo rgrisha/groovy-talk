@@ -38,8 +38,16 @@ public class RulesDsl {
     this
   }
 
+  @TupleConstructor
+  class NeighboursCheck {
+    int neighbours
+  }
+
   def with(Closure neighboursCheck) {
-    tmpRecord.neighboursCheck = neighboursCheck
+    tmpRecord.neighboursCheck = { neighbours ->
+      neighboursCheck.delegate = new NeighboursCheck(neighbours)
+      neighboursCheck()
+    }
     this
   }
 
@@ -47,6 +55,5 @@ public class RulesDsl {
     tmpRecord.action = action
     rules.add(tmpRecord.clone())
   }
-
 
 }
