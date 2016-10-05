@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Groovy</h1>
+					<h3>Language overview</h3>
+				</section>
+
+				<section>
+					<h1>Syntax</h1>
+
+					<ul>
+						<li>
+							Simplified declaration
+							<pre><code class="groovy" data-trim contenteditable>
+def a = 123, b = "zaza"
+							</code></pre>
+						</li>
+						<li>
+							def makes java.lang.Object
+						</li>
+						<li>
+							No need of semicolons, but usable if separating statements
+							<pre><code class="groovy" data-trim contenteditable>
+def a = 123; b = "zaza"; c = true
+							</code></pre>
+
+						</li>
+
+					</ul>
+				</section>
+				<section>
+					<h2>Loop iteration</h2>
+					<ul>
+						<li>
+							Loop with upto
+							<pre><code class="groovy" data-trim contenteditable>
+
+1.upto(4, {
+   println "Number ${it}"
+})
+							</code></pre>
+						</li>
+						<li>
+							Loop until 5 with step 2
+							<pre><code class="groovy" data-trim contenteditable>
+0.step 5, 2, {
+   println it
+}
+							</code></pre>
+						</li>
+						<li>
+							Super verbosive
+							<pre><code class="groovy" data-trim-z contenteditable>
+3.times {
+   println "Hello World ${it}"
+}
+							</code></pre>
+						</li>
+					</ul>
+
+				</section>
+				<section>
+					<h2>Function declaration</h2>
+					<ul>
+						<li>
+							No type declaration
+							<pre><code class="groovy" data-trim contenteditable>
+def f(a,b) {...}
+							</code></pre>
+						</li>
+						<li>
+							No need for return statement
+							<pre><code class="groovy" data-trim contenteditable>
+
+def f(a,b) { a*a + b*b}
+
+f 5, 6
+//Result = 61
+							
+							</code></pre>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Typing</h2>
+					<ul>
+						<li>
+							Groovy is not untyped language
+						</li>
+						<li>
+							Loosely typed languages == check type at runtime
+						</li>
+						</li>
+							Duck typing == a way to do loose typing on objects
+						</li>
+						<li>
+							With normal typing, suitability is assumed to be determined by an object's type only. In duck typing, an object's suitability is determined by the presence of certain methods and properties (with appropriate meaning), rather than the actual type of the object
+						</li>
+					</ul>
+
+				</section>
+				<section>
+					<h2>Duck typing in action</h2>
+					<pre><code class="groovy" data-trim contenteditable>
+
+class Duck {
+    def name = "Duck"
+    def quack() {name + " is quacking"}
+}
+
+class Straus {
+    def name = "Straus"
+    def quack() {name + " is quacking"}
+}
+
+[new Duck(),new Straus()].forEach{System.out.println it.quack()}
+
+//Result:
+Duck is quacking
+Straus is quacking
+					</code></pre>
+					It is possible to inspect an object:
+					<pre><code class="groovy" data-trim contenteditable>
+hasProperty(name)
+respondsTo(name)
+					</code></pre>
+					
+				</section>
+				<section>
+					<h2>Closures</h2>
+					<ul>
+						<li>
+“A closure is a special kind of object that combines two things: a function, and the environment in which that function was created. The environment consists of any local variables that were in-scope at the time that the closure was created.”
+						</li>
+						<li>
+							Javascript closure:
+							<pre><code class="javascript" data-trim contenteditable>
+var multByTen = function(a) {
+    return function multiplier(y) {
+        return a * y;
+    } 
+}(10);
+
+console.log("multiplier by 10 returns:", multByTen(5));
+
+//multiplier by 10 returns: 50
+							</code></pre>
+
+						</li>
+						<li>
+						Groovy's closures == lambdas
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>More name clashes</h2>
+					<ul>
+						<li>
+							map == collect
+						</li>
+						<li>
+							reduce or fold == inject
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Closure is first class type</h2>
+					<pre><code class="javascript" data-trim contenteditable>
+def a
+a = 5
+println a
+
+a = {z -&gt; z * 10}
+println a
+					</code></pre>
+					<pre>
+5
+samples$_run_closure1@5bd5c7fd
+					</pre>
+				</section>
+				<section>
+					<h2>Second order functions on collections</h2>
+					<pre><code class="javascript" data-trim contenteditable>
+["apple", "banana", "cherry"].
+	collect{it.toUpperCase()}
+					</code></pre>
+					<pre>
+Result: [APPLE, BANANA, CHERRY]
+					</pre>
+					<pre><code class="javascript" data-trim contenteditable>
+[1,2,3,4].inject(0){ accumulator, i -&gt; accumulator + i }
+					</code></pre>
+					<pre>
+Result: 10
+					</pre>
+					<pre><code class="javascript" data-trim contenteditable>
+["apple", "banana", "cherry"]
+  .inject("") { 
+    a, s -&gt; a + 
+    org.codehaus.groovy.runtime.StringGroovyMethods.reverse(s)
+  }
+					</code></pre>
+					<pre>
+Result: elppaananabyrrehc
+					</pre>
+				</section>
+				<section>
+					<h2>Functions on collections are not lazy</h2>
+					<pre><code class="javascript" data-trimz contenteditable>
+(1..10).collect{
+	System.out.println String.format("In collect, x = %s",it);
+	it
+}.head()
+					</code></pre>
+					<pre>
+In collect, x = 1
+In collect, x = 2
+In collect, x = 3
+In collect, x = 4
+In collect, x = 5
+In collect, x = 6
+In collect, x = 7
+In collect, x = 8
+In collect, x = 9
+In collect, x = 10
+Result: 1
+					</pre>
+
+				</section>
+				<section>
+					<h2>XML support</h2>
+					Since Groovy supports dynamic methods, data structures might be integrated into language syntax
+					<pre><code class="groovy" data-trim contenteditable>
+def rootNode = new XmlSlurper().parseText("""
+<menu>
+    <food>
+        <name>Belgian Waffles</name>
+        <specs price="5.95" calories="650" />
+    </food>
+    <food>
+        <name>Strawberry Belgian Waffles</name>
+        <specs price="7.95" calories="900" />
+    </food>
+</menu>""");
+println rootNode.food[0].name
+println rootNode.food[1].specs.@price
+					</code></pre>
+					<pre>
+Belgian Waffles
+7.95
+					</pre>
+				</section>
+				<section>
+					<h2>JSON</h2>
+					Let's read some JSON:
+					<pre><code class="groovy" data-trim contenteditable>
+def slurper = new groovy.json.JsonSlurper()
+def jsc = slurper.parseText("""
+{"menu": {
+    "coke": { "qty": 20, "price": "1.1" },
+    "pepsi": { "qty": 20, "price": "1.2" }
+}}""");
+
+def jsonBuilder = new groovy.json.JsonBuilder()
+
+def beer = jsonBuilder {
+      qty 33
+      price 2.5
+}
+
+jsc.menu.put("beer", beer)
+					</code></pre>
+					<pre>
+Result: {menu={beer={qty=33, price=2.5}, coke={price=1.1, qty=20}, pepsi={price=1.2, qty=20}}}
+					</pre>
+				</section>
+
+				<section>
+					<h2>Templating</h2>
+					Groovy has several out of box template engines. Data can be tree like, to put data easy, must be a map 
+					Template for the data:
+					<pre>
+{menu={beer={qty=33, price=2.5}, coke={price=1.1, qty=20}, pepsi={price=1.2, qty=20}}}
+				</pre>
+					<pre><code class="groovy" data-trim contenteditable>
+def text = 'Todays offer for beer: ${menu.beer.qty} pcs ' + 
+           'per ${menu.beer.price}, coke: ${menu.coke.qty} ' + 
+           'pcs per ${menu.coke.price}'
+
+def engine = new groovy.text.SimpleTemplateEngine()
+def template = engine.createTemplate(text).make(jsc)
+
+template.toString()
+					</code></pre>
+					<pre>
+Todays offer for beer: 33 pcs per 2.5, coke: 20 pcs per 1.1
+					</pre>
+				</section>
+				<section>
+					<h2>Scripting</h2>
+					Script
+					<pre><code class="groovy" data-trim contenteditable>
+println 'Hello from Groovy!'
+					</code></pre>
+					will be compiled into
+					<pre><code class="groovy" data-trim contenteditable>
+import org.codehaus.groovy.runtime.InvokerHelper
+class Main extends Script {                     
+    def run() {                                 
+    	println 'Hello from Groovy!'
+    }
+    static void main(String[] args) {           
+    	InvokerHelper.runScript(Main, args)     
+    }
+}
+					</code></pre>
+
+					
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
