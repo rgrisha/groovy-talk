@@ -46,4 +46,15 @@ public class RulesDsl {
     rules.add(tmpRule.clone())
   }
 
+  def static parseStringRules(String rulesStr) {
+    def binding = new Binding()
+    def shell = new GroovyShell(binding)
+    def rulesInClosure = "{it->" + rulesStr + "}"
+    Closure closure = shell.evaluate(rulesInClosure)
+    RulesDsl rulesContext = new RulesDsl()
+    closure.delegate = rulesContext
+    closure()
+    rulesContext.getRules()
+  }
+
 }

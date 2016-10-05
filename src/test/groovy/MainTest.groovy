@@ -46,20 +46,34 @@ class MainTest extends spock.lang.Specification {
     Game game = new Game()
     Generation g1 = new Generation([new Cell(1,1), new Cell(2,1), new Cell(3,1)].toSet())
     expect:
-    g1.survivedCells(game.rules) == [new Cell(2,1)].toSet()
+    g1.survivedCells(game.defaultRules) == [new Cell(2,1)].toSet()
   }
 
   def "newborn cell calculated ok"() {
     Game game = new Game()
     Generation g1 = new Generation([new Cell(1,1), new Cell(2,1), new Cell(3,1)].toSet())
     expect:
-    g1.newbornCells(game.rules) == [new Cell(2,0), new Cell(2,2)].toSet()
+    g1.newbornCells(game.defaultRules) == [new Cell(2,0), new Cell(2,2)].toSet()
   }
 
   def "spinner generation is working"() {
   Game game = new Game()
     Generation g1 = new Generation([new Cell(1,1), new Cell(2,1), new Cell(3,1)].toSet())
 
+    expect:
+    game.getNewGeneration(g1) == [new Cell(2,0), new Cell(2,1), new Cell(2,2)].toSet()
+  }
+
+  def "can read game-of-life resources file"() {
+    String rulesStr = this.getClass().getResource( 'game-of-life.dsl' ).text
+    expect:
+    ((rulesStr =~ /then/).count) > 4
+  }
+
+  def "can parse game-of-life resources file"() {
+    Game game = new Game()
+    game.readRulesFromClasspath('game-of-life.dsl')
+    Generation g1 = new Generation([new Cell(1,1), new Cell(2,1), new Cell(3,1)].toSet())
     expect:
     game.getNewGeneration(g1) == [new Cell(2,0), new Cell(2,1), new Cell(2,2)].toSet()
   }
