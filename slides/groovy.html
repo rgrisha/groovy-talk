@@ -26,84 +26,9 @@
 			<div class="slides">
 				<section>
 					<h1>Groovy</h1>
-					<h3>Language overview</h3>
+					<h3>Some interesting features</h3>
 				</section>
 
-				<section>
-					<h1>Syntax</h1>
-
-					<ul>
-						<li>
-							Simplified declaration
-							<pre><code class="groovy" data-trim contenteditable>
-def a = 123, b = "zaza"
-							</code></pre>
-						</li>
-						<li>
-							def makes java.lang.Object
-						</li>
-						<li>
-							No need of semicolons, but usable if separating statements
-							<pre><code class="groovy" data-trim contenteditable>
-def a = 123; b = "zaza"; c = true
-							</code></pre>
-
-						</li>
-
-					</ul>
-				</section>
-				<section>
-					<h2>Loop iteration</h2>
-					<ul>
-						<li>
-							Loop with upto
-							<pre><code class="groovy" data-trim contenteditable>
-
-1.upto(4, {
-   println "Number ${it}"
-})
-							</code></pre>
-						</li>
-						<li>
-							Loop until 5 with step 2
-							<pre><code class="groovy" data-trim contenteditable>
-0.step 5, 2, {
-   println it
-}
-							</code></pre>
-						</li>
-						<li>
-							Super verbosive
-							<pre><code class="groovy" data-trim-z contenteditable>
-3.times {
-   println "Hello World ${it}"
-}
-							</code></pre>
-						</li>
-					</ul>
-
-				</section>
-				<section>
-					<h2>Function declaration</h2>
-					<ul>
-						<li>
-							No type declaration
-							<pre><code class="groovy" data-trim contenteditable>
-def f(a,b) {...}
-							</code></pre>
-						</li>
-						<li>
-							No need for return statement
-							<pre><code class="groovy" data-trim contenteditable>
-
-def f(a,b) { a*a + b*b}
-
-f 5, 6
-//Result = 61
-							
-							</code></pre>
-						</li>
-					</ul>
 				</section>
 				<section>
 					<h2>Typing</h2>
@@ -118,7 +43,7 @@ f 5, 6
 							Duck typing == a way to do loose typing on objects
 						</li>
 						<li>
-							With normal typing, suitability is assumed to be determined by an object's type only. In duck typing, an object's suitability is determined by the presence of certain methods and properties (with appropriate meaning), rather than the actual type of the object
+							Still assumes typing on Java primitive types
 						</li>
 					</ul>
 
@@ -157,21 +82,50 @@ respondsTo(name)
 “A closure is a special kind of object that combines two things: a function, and the environment in which that function was created. The environment consists of any local variables that were in-scope at the time that the closure was created.”
 						</li>
 						<li>
-							Javascript closure:
-							<pre><code class="javascript" data-trim contenteditable>
-var multByTen = function(a) {
-    return function multiplier(y) {
-        return a * y;
-    } 
-}(10);
+							A real closure in action:
+							<pre><code class="groovy" data-trim contenteditable>
+def outerFn = { a -&gt; 
+    { b -&gt; """I took \$a($a) in closure, but still 
+    depend on param \$b which is $b""" }
+}
 
-console.log("multiplier by 10 returns:", multByTen(5));
+outerFn(10)(20)
 
-//multiplier by 10 returns: 50
 							</code></pre>
+							<pre>
+Result: I took $a(10) in closure, but still 
+depend on param $b which is 20
+							</pre>
 
 						</li>
 					</ul>
+				</section>
+				<section>
+					<h2>Closures != methods</h2>
+					<ul>
+						<li>Methods are Java like</li>
+						<li>Closure is a object instance of Closure class</li>
+						<ul>
+							<li>It has this, delegate contexts</li>
+							<li>It retains local variable scope</li>
+							<li>It may be memoized:</li>
+								<pre><code class="groovy" data-trim contenteditable>
+def fib
+fib={ long n -&gt; n&lt;2?n:fib(n-1)+fib(n-2) }
+//memoized version below
+fib={ long n-&gt; n &lt; 2 ?
+	n:fib(n-1)+fib(n-2)}.memoize()
+								</code></pre>
+							<li>It may curry:</li>
+					<pre><code class="groovy" data-trim contenteditable>
+def add = { n, m -&gt; n + m }
+def add2 = add.curry( 2 )
+
+assert add2( 4 ) == 6
+					</code></pre>
+						</ul>
+					</ul>
+
 				</section>
 				<section>
 					<h2>Name clashes</h2>
@@ -249,6 +203,34 @@ Result: 1
 
 				</section>
 				<section>
+					<h2>Dynamic methods</h2>
+					<pre><code class="groovy" data-trim contenteditable>
+class Universal {
+    def propertyMissing(String name, args) {
+        println "Called property $name"
+        return this
+    }
+    def methodMissing(String name, args) {
+        println "Called method $name"
+        return this
+    }
+}
+new Universal()
+    .iDoNot(5)
+    .know("6")
+    .what("???")
+    .iAm(true)
+    .doing </code></pre>
+					<pre>
+Called method iDoNot
+Called method know
+Called method what
+Called method iAm
+Called property doing
+Result: Universal@64dc147
+					</pre>
+				</section>
+				<section>
 					<h2>XML support</h2>
 					Since Groovy supports dynamic methods, data structures might be integrated into language syntax
 					<pre><code class="groovy" data-trim contenteditable>
@@ -273,7 +255,7 @@ Belgian Waffles
 				</section>
 				<section>
 					<h2>JSON</h2>
-					Let's read some JSON:
+					Let's read and write some JSON:
 					<pre><code class="groovy" data-trim contenteditable>
 def slurper = new groovy.json.JsonSlurper()
 def jsc = slurper.parseText("""
@@ -385,16 +367,6 @@ class Car {
 					</code></pre>
 				</section>
 				<section>
-					<h2>Builder AST</h2>
-					<pre><code class="groovy" data-trim contenteditable>
-					</code></pre>
-				</section>
-				<section>
-					<h2>Builder AST</h2>
-					<pre><code class="groovy" data-trim contenteditable>
-					</code></pre>
-				</section>
-				<section>
 					<h2>Scripting</h2>
 					Script
 					<pre><code class="groovy" data-trim contenteditable>
@@ -412,8 +384,27 @@ class Main extends Script {
     }
 }
 					</code></pre>
-
-					
+				</section>
+				<section>
+					<h2>DSL</h2>
+					<p>
+DSLs are small languages, focused on a particular aspect of a software system. You can't build a whole program with a DSL, but you often use multiple DSLs in a system mainly written in a general purpose language.
+					</p>
+					<p>
+					It is quite convenient to write a DSL processor in Groovy. Features that help:
+					</p>
+					<ul>
+						<li>Closures</li>
+						<li>Extended syntax featues</li>
+						<li>Loose typing</li>
+						<li>Dynamic compilation</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Demo</h2>
+					<p>
+https://github.com/rgrisha/groovy-talk/
+					</p>
 				</section>
 			</div>
 		</div>
